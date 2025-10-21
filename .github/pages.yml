@@ -1,0 +1,34 @@
+# GitHub Pages Configuration
+
+# Enable GitHub Pages
+source: gh-pages
+
+# Custom domain (optional)
+# url: https://alterzent.github.io
+# baseurl: /WebIoStructure
+
+# Jekyll configuration (if using Jekyll)
+plugins:
+  - jekyll-github-metadata
+  - jekyll-sitemap
+
+# Exclude files from GitHub Pages
+exclude:
+  - node_modules/
+  - test-results/
+  - .github/
+  - src/
+  - tests/
+  - scripts/
+  - "*.json"
+  - "*.ts"
+  - "*.js"
+  - ".eslintrc*"
+  - ".prettier*"
+  - "cucumber.js"
+  - "tsconfig.json"
+
+# Include specific files
+include:
+  - reports/
+  - public/

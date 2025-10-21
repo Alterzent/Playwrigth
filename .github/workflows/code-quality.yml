@@ -1,0 +1,214 @@
+name: Code Quality
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 2 * * 1' # Weekly on Monday at 2 AM
+
+env:
+  NODE_VERSION: '18.x'
+
+jobs:
+  lint:
+    name: Linting and Formatting
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Install additional linting tools
+      run: |
+        npm install --save-dev eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin prettier
+        
+    - name: Create ESLint config
+      run: |
+        cat > .eslintrc.json << 'EOF'
+        {
+          "parser": "@typescript-eslint/parser",
+          "plugins": ["@typescript-eslint"],
+          "extends": [
+            "eslint:recommended",
+            "@typescript-eslint/recommended"
+          ],
+          "rules": {
+            "@typescript-eslint/no-unused-vars": "error",
+            "@typescript-eslint/no-explicit-any": "warn",
+            "prefer-const": "error",
+            "no-var": "error"
+          },
+          "env": {
+            "node": true,
+            "es6": true
+          }
+        }
+        EOF
+        
+    - name: Create Prettier config
+      run: |
+        cat > .prettierrc << 'EOF'
+        {
+          "semi": true,
+          "trailingComma": "es5",
+          "singleQuote": true,
+          "printWidth": 100,
+          "tabWidth": 2
+        }
+        EOF
+        
+    - name: Run ESLint
+      run: npx eslint "src/**/*.ts" "tests/**/*.ts" --format=compact
+      
+    - name: Check Prettier formatting
+      run: npx prettier --check "src/**/*.ts" "tests/**/*.ts" "*.json" "*.md"
+      
+    - name: TypeScript compilation check
+      run: npx tsc --noEmit --strict
+      
+    - name: Upload lint results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: lint-results
+        path: |
+          eslint-report.json
+        retention-days: 7
+
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run npm audit
+      run: |
+        npm audit --audit-level moderate --json > npm-audit.json || true
+        
+    - name: Security scan with Snyk
+      uses: snyk/actions/node@master
+      continue-on-error: true
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      with:
+        args: --severity-threshold=medium --json > snyk-results.json
+        
+    - name: Upload security results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: security-results
+        path: |
+          npm-audit.json
+          snyk-results.json
+        retention-days: 30
+
+  complexity:
+    name: Code Complexity Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Install complexity analysis tools
+      run: npm install --save-dev typescript-complexity
+      
+    - name: Analyze code complexity
+      run: |
+        echo "Analyzing code complexity..."
+        find src -name "*.ts" -exec wc -l {} + | sort -nr > complexity-report.txt
+        echo "=== Lines of Code per File ===" >> complexity-report.txt
+        
+    - name: Generate complexity report
+      run: |
+        echo "## Code Complexity Report" > complexity-summary.md
+        echo "" >> complexity-summary.md
+        echo "### File Size Analysis" >> complexity-summary.md
+        echo "\`\`\`" >> complexity-summary.md
+        head -20 complexity-report.txt >> complexity-summary.md
+        echo "\`\`\`" >> complexity-summary.md
+        
+    - name: Upload complexity results
+      uses: actions/upload-artifact@v4
+      with:
+        name: complexity-analysis
+        path: |
+          complexity-report.txt
+          complexity-summary.md
+        retention-days: 7
+
+  documentation:
+    name: Documentation Check
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Check README exists
+      run: |
+        if [ ! -f README.md ]; then
+          echo "❌ README.md is missing"
+          exit 1
+        fi
+        echo "✅ README.md exists"
+        
+    - name: Check documentation completeness
+      run: |
+        echo "Checking documentation completeness..."
+        
+        # Check for key sections in README
+        sections=("Setup" "Commands" "Architecture" "Reporting")
+        for section in "${sections[@]}"; do
+          if grep -q "$section" README.md; then
+            echo "✅ $section section found"
+          else
+            echo "⚠️ $section section missing"
+          fi
+        done
+        
+    - name: Validate code comments
+      run: |
+        echo "Checking for code documentation..."
+        comment_count=$(find src -name "*.ts" -exec grep -l "^\s*\*\|^\s*//" {} \; | wc -l)
+        total_files=$(find src -name "*.ts" | wc -l)
+        
+        echo "Files with comments: $comment_count/$total_files"
+        
+        if [ $comment_count -gt 0 ]; then
+          echo "✅ Code contains documentation"
+        else
+          echo "⚠️ Consider adding more code documentation"
+        fi
