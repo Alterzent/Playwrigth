@@ -2,259 +2,259 @@ name: Code Quality
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   schedule:
-    - cron: '0 2 * * 1' # Weekly on Monday at 2 AM
+    - cron: "0 2 * * 1" # Weekly on Monday at 2 AM
 
 env:
-  NODE_VERSION: '18.x'
+  NODE_VERSION: "18.x"
 
 jobs:
   lint:
     name: Linting and Formatting
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
-        
-    - name: Install dependencies
-      run: npm ci
-      
-    - name: Install additional linting tools
-      run: |
-        npm install --save-dev eslint-formatter-compact eslint-formatter-html eslint-formatter-json prettier
-        
-    - name: Verify ESLint configuration
-      run: |
-        echo "✅ Using modern eslint.config.js (already in repository)"
-        ls -la eslint.config.js || echo "❌ ESLint config not found"
-        
-    - name: Create Prettier config
-      run: |
-        cat > .prettierrc << 'EOF'
-        {
-          "semi": true,
-          "trailingComma": "es5",
-          "singleQuote": true,
-          "printWidth": 100,
-          "tabWidth": 2
-        }
-        EOF
-        
-    - name: Run ESLint with multiple formats
-      run: |
-        echo "🔍 Running ESLint analysis..."
-        
-        # Create reports directory
-        mkdir -p reports
-        
-        # Run ESLint with different formatters
-        echo "📊 Generating compact report..."
-        npm run lint:compact || echo "ESLint found issues (compact format)"
-        
-        echo "📋 Generating HTML report..."
-        npm run lint:html || echo "ESLint found issues (HTML format)"
-        
-        echo "📄 Generating JSON report..."
-        npm run lint:json || echo "ESLint found issues (JSON format)"
-        
-        # Run standard lint for CI/CD decision making
-        echo "✅ Running standard lint check..."
-        npm run lint
-      
-    - name: Check Prettier formatting
-      run: npx prettier --check "src/**/*.ts" "tests/**/*.ts" "*.json" "*.md"
-      
-    - name: TypeScript compilation check
-      run: npx tsc --noEmit --strict
-      
-    - name: Upload lint results
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: lint-results
-        path: |
-          reports/eslint-report.html
-          reports/eslint-report.json
-        retention-days: 7
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install additional linting tools
+        run: |
+          npm install --save-dev eslint-formatter-compact eslint-formatter-html eslint-formatter-json prettier
+
+      - name: Verify ESLint configuration
+        run: |
+          echo "✅ Using modern eslint.config.js (already in repository)"
+          ls -la eslint.config.js || echo "❌ ESLint config not found"
+
+      - name: Create Prettier config
+        run: |
+          cat > .prettierrc << 'EOF'
+          {
+            "semi": true,
+            "trailingComma": "es5",
+            "singleQuote": true,
+            "printWidth": 100,
+            "tabWidth": 2
+          }
+          EOF
+
+      - name: Run ESLint with multiple formats
+        run: |
+          echo "🔍 Running ESLint analysis..."
+
+          # Create reports directory
+          mkdir -p reports
+
+          # Run ESLint with different formatters
+          echo "📊 Generating compact report..."
+          npm run lint:compact || echo "ESLint found issues (compact format)"
+
+          echo "📋 Generating HTML report..."
+          npm run lint:html || echo "ESLint found issues (HTML format)"
+
+          echo "📄 Generating JSON report..."
+          npm run lint:json || echo "ESLint found issues (JSON format)"
+
+          # Run standard lint for CI/CD decision making
+          echo "✅ Running standard lint check..."
+          npm run lint
+
+      - name: Check Prettier formatting
+        run: npx prettier --check "src/**/*.ts" "tests/**/*.ts" "*.json" "*.md"
+
+      - name: TypeScript compilation check
+        run: npx tsc --noEmit --strict
+
+      - name: Upload lint results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-results
+          path: |
+            reports/eslint-report.html
+            reports/eslint-report.json
+          retention-days: 7
 
   security:
     name: Security Scan
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
-        
-    - name: Install dependencies
-      run: npm ci
-      
-    - name: Run npm audit
-      run: |
-        npm audit --audit-level moderate --json > npm-audit.json || true
-        
-    - name: Security scan with Snyk
-      uses: snyk/actions/node@master
-      continue-on-error: true
-      env:
-        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      with:
-        args: --severity-threshold=medium --json > snyk-results.json
-        
-    - name: Upload security results
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: security-results
-        path: |
-          npm-audit.json
-          snyk-results.json
-        retention-days: 30
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: |
+          npm audit --audit-level moderate --json > npm-audit.json || true
+
+      - name: Security scan with Snyk
+        uses: snyk/actions/node@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=medium --json > snyk-results.json
+
+      - name: Upload security results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-results
+          path: |
+            npm-audit.json
+            snyk-results.json
+          retention-days: 30
 
   complexity:
     name: Code Complexity Analysis
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
-        
-    - name: Install dependencies
-      run: npm ci
-      
-    - name: Install complexity analysis tools
-      run: |
-        # Install real code analysis tools
-        npm install --save-dev jscpd || echo "jscpd installation failed"
-        npm install --save-dev typescript-eslint-complexity || echo "typescript-eslint-complexity not available"
-        
-    - name: Analyze code complexity
-      run: |
-        echo "📊 Analyzing code complexity..."
-        
-        # Create reports directory
-        mkdir -p reports
-        
-        # Basic line count analysis
-        echo "=== Lines of Code Analysis ===" > reports/complexity-report.txt
-        find src -name "*.ts" -exec wc -l {} + | sort -nr >> reports/complexity-report.txt
-        
-        # Function and class count
-        echo "" >> reports/complexity-report.txt
-        echo "=== Code Structure Analysis ===" >> reports/complexity-report.txt
-        echo "Functions:" >> reports/complexity-report.txt
-        grep -r "function\|=>" src --include="*.ts" | wc -l >> reports/complexity-report.txt
-        echo "Classes:" >> reports/complexity-report.txt
-        grep -r "class " src --include="*.ts" | wc -l >> reports/complexity-report.txt
-        echo "Interfaces:" >> reports/complexity-report.txt
-        grep -r "interface " src --include="*.ts" | wc -l >> reports/complexity-report.txt
-        
-        # File size analysis
-        echo "" >> reports/complexity-report.txt
-        echo "=== File Size Analysis ===" >> reports/complexity-report.txt
-        find src -name "*.ts" -exec du -h {} + | sort -hr >> reports/complexity-report.txt
-        
-        # Run duplicate code detection if jscpd is available
-        if command -v jscpd &> /dev/null; then
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install complexity analysis tools
+        run: |
+          # Install real code analysis tools
+          npm install --save-dev jscpd || echo "jscpd installation failed"
+          npm install --save-dev typescript-eslint-complexity || echo "typescript-eslint-complexity not available"
+
+      - name: Analyze code complexity
+        run: |
+          echo "📊 Analyzing code complexity..."
+
+          # Create reports directory
+          mkdir -p reports
+
+          # Basic line count analysis
+          echo "=== Lines of Code Analysis ===" > reports/complexity-report.txt
+          find src -name "*.ts" -exec wc -l {} + | sort -nr >> reports/complexity-report.txt
+
+          # Function and class count
           echo "" >> reports/complexity-report.txt
-          echo "=== Duplicate Code Analysis ===" >> reports/complexity-report.txt
-          npx jscpd src --reporters console,json --output reports/ || echo "JSCPD analysis failed" >> reports/complexity-report.txt
-        fi
-        
-        # TypeScript specific analysis
-        echo "" >> reports/complexity-report.txt
-        echo "=== TypeScript Analysis ===" >> reports/complexity-report.txt
-        echo "Total TypeScript files:" >> reports/complexity-report.txt
-        find src -name "*.ts" | wc -l >> reports/complexity-report.txt
-        echo "Average lines per file:" >> reports/complexity-report.txt
-        find src -name "*.ts" -exec wc -l {} + | awk '{sum+=$1; count++} END {if(count>0) print sum/count; else print 0}' >> reports/complexity-report.txt
-        
-    - name: Generate complexity report
-      run: |
-        echo "📊 Generating complexity summary..."
-        echo "## Code Complexity Report" > reports/complexity-summary.md
-        echo "" >> reports/complexity-summary.md
-        echo "### Generated: $(date)" >> reports/complexity-summary.md
-        echo "" >> reports/complexity-summary.md
-        echo "### File Size Analysis" >> reports/complexity-summary.md
-        echo "\`\`\`" >> reports/complexity-summary.md
-        head -20 reports/complexity-report.txt >> reports/complexity-summary.md
-        echo "\`\`\`" >> reports/complexity-summary.md
-        
-        # Display summary
-        echo "📈 Complexity analysis completed!"
-        cat reports/complexity-summary.md
-        
-    - name: Upload complexity results
-      uses: actions/upload-artifact@v4
-      with:
-        name: complexity-analysis
-        path: |
-          reports/complexity-report.txt
-          reports/complexity-summary.md
-        retention-days: 7
+          echo "=== Code Structure Analysis ===" >> reports/complexity-report.txt
+          echo "Functions:" >> reports/complexity-report.txt
+          grep -r "function\|=>" src --include="*.ts" | wc -l >> reports/complexity-report.txt
+          echo "Classes:" >> reports/complexity-report.txt
+          grep -r "class " src --include="*.ts" | wc -l >> reports/complexity-report.txt
+          echo "Interfaces:" >> reports/complexity-report.txt
+          grep -r "interface " src --include="*.ts" | wc -l >> reports/complexity-report.txt
+
+          # File size analysis
+          echo "" >> reports/complexity-report.txt
+          echo "=== File Size Analysis ===" >> reports/complexity-report.txt
+          find src -name "*.ts" -exec du -h {} + | sort -hr >> reports/complexity-report.txt
+
+          # Run duplicate code detection if jscpd is available
+          if command -v jscpd &> /dev/null; then
+            echo "" >> reports/complexity-report.txt
+            echo "=== Duplicate Code Analysis ===" >> reports/complexity-report.txt
+            npx jscpd src --reporters console,json --output reports/ || echo "JSCPD analysis failed" >> reports/complexity-report.txt
+          fi
+
+          # TypeScript specific analysis
+          echo "" >> reports/complexity-report.txt
+          echo "=== TypeScript Analysis ===" >> reports/complexity-report.txt
+          echo "Total TypeScript files:" >> reports/complexity-report.txt
+          find src -name "*.ts" | wc -l >> reports/complexity-report.txt
+          echo "Average lines per file:" >> reports/complexity-report.txt
+          find src -name "*.ts" -exec wc -l {} + | awk '{sum+=$1; count++} END {if(count>0) print sum/count; else print 0}' >> reports/complexity-report.txt
+
+      - name: Generate complexity report
+        run: |
+          echo "📊 Generating complexity summary..."
+          echo "## Code Complexity Report" > reports/complexity-summary.md
+          echo "" >> reports/complexity-summary.md
+          echo "### Generated: $(date)" >> reports/complexity-summary.md
+          echo "" >> reports/complexity-summary.md
+          echo "### File Size Analysis" >> reports/complexity-summary.md
+          echo "\`\`\`" >> reports/complexity-summary.md
+          head -20 reports/complexity-report.txt >> reports/complexity-summary.md
+          echo "\`\`\`" >> reports/complexity-summary.md
+
+          # Display summary
+          echo "📈 Complexity analysis completed!"
+          cat reports/complexity-summary.md
+
+      - name: Upload complexity results
+        uses: actions/upload-artifact@v4
+        with:
+          name: complexity-analysis
+          path: |
+            reports/complexity-report.txt
+            reports/complexity-summary.md
+          retention-days: 7
 
   documentation:
     name: Documentation Check
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      
-    - name: Check README exists
-      run: |
-        if [ ! -f README.md ]; then
-          echo "❌ README.md is missing"
-          exit 1
-        fi
-        echo "✅ README.md exists"
-        
-    - name: Check documentation completeness
-      run: |
-        echo "Checking documentation completeness..."
-        
-        # Check for key sections in README
-        sections=("Setup" "Commands" "Architecture" "Reporting")
-        for section in "${sections[@]}"; do
-          if grep -q "$section" README.md; then
-            echo "✅ $section section found"
-          else
-            echo "⚠️ $section section missing"
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check README exists
+        run: |
+          if [ ! -f README.md ]; then
+            echo "❌ README.md is missing"
+            exit 1
           fi
-        done
-        
-    - name: Validate code comments
-      run: |
-        echo "Checking for code documentation..."
-        comment_count=$(find src -name "*.ts" -exec grep -l "^\s*\*\|^\s*//" {} \; | wc -l)
-        total_files=$(find src -name "*.ts" | wc -l)
-        
-        echo "Files with comments: $comment_count/$total_files"
-        
-        if [ $comment_count -gt 0 ]; then
-          echo "✅ Code contains documentation"
-        else
-          echo "⚠️ Consider adding more code documentation"
-        fi
+          echo "✅ README.md exists"
+
+      - name: Check documentation completeness
+        run: |
+          echo "Checking documentation completeness..."
+
+          # Check for key sections in README
+          sections=("Setup" "Commands" "Architecture" "Reporting")
+          for section in "${sections[@]}"; do
+            if grep -q "$section" README.md; then
+              echo "✅ $section section found"
+            else
+              echo "⚠️ $section section missing"
+            fi
+          done
+
+      - name: Validate code comments
+        run: |
+          echo "Checking for code documentation..."
+          comment_count=$(find src -name "*.ts" -exec grep -l "^\s*\*\|^\s*//" {} \; | wc -l)
+          total_files=$(find src -name "*.ts" | wc -l)
+
+          echo "Files with comments: $comment_count/$total_files"
+
+          if [ $comment_count -gt 0 ]; then
+            echo "✅ Code contains documentation"
+          else
+            echo "⚠️ Consider adding more code documentation"
+          fi

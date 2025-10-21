@@ -3,232 +3,232 @@ name: Release Management
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - "v*.*.*"
   workflow_dispatch:
     inputs:
       version:
-        description: 'Release version (e.g., 1.0.0)'
+        description: "Release version (e.g., 1.0.0)"
         required: true
         type: string
       prerelease:
-        description: 'Mark as pre-release'
+        description: "Mark as pre-release"
         required: false
         type: boolean
         default: false
 
 env:
-  NODE_VERSION: '18.x'
+  NODE_VERSION: "18.x"
 
 jobs:
   validate:
     name: Validate Release
     runs-on: ubuntu-latest
-    
+
     outputs:
       version: ${{ steps.version.outputs.version }}
-      
+
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-        
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
-        
-    - name: Extract version
-      id: version
-      run: |
-        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-          VERSION="${{ github.event.inputs.version }}"
-        else
-          VERSION=${GITHUB_REF#refs/tags/v}
-        fi
-        echo "version=$VERSION" >> $GITHUB_OUTPUT
-        echo "Releasing version: $VERSION"
-        
-    - name: Install dependencies
-      run: npm ci
-      
-    - name: Run full test suite
-      run: |
-        npx playwright install --with-deps
-        npm run test:headless
-        
-    - name: Build project
-      run: npm run compile
-      
-    - name: Validate package.json version
-      run: |
-        PACKAGE_VERSION=$(node -p "require('./package.json').version")
-        RELEASE_VERSION="${{ steps.version.outputs.version }}"
-        
-        if [ "$PACKAGE_VERSION" != "$RELEASE_VERSION" ]; then
-          echo "❌ Version mismatch: package.json ($PACKAGE_VERSION) vs release ($RELEASE_VERSION)"
-          exit 1
-        fi
-        echo "✅ Version validation passed"
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Extract version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION=${GITHUB_REF#refs/tags/v}
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Releasing version: $VERSION"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run full test suite
+        run: |
+          npx playwright install --with-deps
+          npm run test:headless
+
+      - name: Build project
+        run: npm run compile
+
+      - name: Validate package.json version
+        run: |
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          RELEASE_VERSION="${{ steps.version.outputs.version }}"
+
+          if [ "$PACKAGE_VERSION" != "$RELEASE_VERSION" ]; then
+            echo "❌ Version mismatch: package.json ($PACKAGE_VERSION) vs release ($RELEASE_VERSION)"
+            exit 1
+          fi
+          echo "✅ Version validation passed"
 
   release:
     name: Create Release
     runs-on: ubuntu-latest
     needs: validate
-    
+
     permissions:
       contents: write
-      
+
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-        
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
-        
-    - name: Install dependencies
-      run: npm ci
-      
-    - name: Build production assets
-      run: |
-        npm run compile
-        npx playwright install --with-deps
-        npm run test:headless
-        npm run report
-        
-    - name: Create release package
-      run: |
-        mkdir -p release-assets
-        
-        # Create distribution package
-        tar -czf release-assets/playwrigth-automation-framework-v${{ needs.validate.outputs.version }}.tar.gz \
-          --exclude=node_modules \
-          --exclude=.git \
-          --exclude=test-results \
-          --exclude=.github \
-          .
-          
-        # Create test reports package
-        if [ -d "reports" ]; then
-          tar -czf release-assets/test-reports-v${{ needs.validate.outputs.version }}.tar.gz reports/
-        fi
-        
-        # Create documentation package
-        tar -czf release-assets/documentation-v${{ needs.validate.outputs.version }}.tar.gz \
-          README.md \
-          docs/ \
-          *.md 2>/dev/null || echo "No additional docs found"
-          
-    - name: Generate changelog
-      id: changelog
-      run: |
-        CHANGELOG=$(cat << 'EOF'
-        ## 🚀 Release v${{ needs.validate.outputs.version }}
-        
-        ### ✨ Features
-        - Professional Playwrigth + Cucumber TypeScript automation framework
-        - Multi-browser testing support (Chromium, Firefox, WebKit)
-        - Comprehensive reporting with HTML and JSON outputs
-        - SOLID principles implementation with design patterns
-        - Advanced Page Object Model architecture
-        
-        ### 🛠️ Technical Improvements
-        - Factory pattern for browser and page management
-        - Singleton configuration management
-        - Template method pattern for page inheritance
-        - Dependency injection for test context
-        
-        ### 📊 Reporting Features
-        - Interactive HTML reports
-        - JSON data export
-        - Screenshot capture on failures
-        - Performance metrics and timing analysis
-        - Cross-browser compatibility reports
-        
-        ### 🔧 Development Tools
-        - TypeScript compilation and validation
-        - ESLint and Prettier integration
-        - GitHub Actions CI/CD pipeline
-        - Automated security scanning
-        - Code quality analysis
-        
-        ### 📦 Package Contents
-        - Framework source code
-        - Test reports and documentation
-        - Configuration files and examples
-        - GitHub Actions workflows
-        
-        ---
-        **Installation:**
-        \`\`\`bash
-        npm install
-        npm run install:browsers
-        npm run test
-        \`\`\`
-        
-        **Full Documentation:** See README.md for complete setup and usage instructions.
-        EOF
-        )
-        
-        echo "changelog<<EOF" >> $GITHUB_OUTPUT
-        echo "$CHANGELOG" >> $GITHUB_OUTPUT
-        echo "EOF" >> $GITHUB_OUTPUT
-        
-    - name: Create GitHub Release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: v${{ needs.validate.outputs.version }}
-        release_name: Release v${{ needs.validate.outputs.version }}
-        body: ${{ steps.changelog.outputs.changelog }}
-        draft: false
-        prerelease: ${{ github.event.inputs.prerelease == 'true' }}
-        
-    - name: Upload release assets
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: release-assets/playwrigth-automation-framework-v${{ needs.validate.outputs.version }}.tar.gz
-        asset_name: playwrigth-automation-framework-v${{ needs.validate.outputs.version }}.tar.gz
-        asset_content_type: application/gzip
-        
-    - name: Upload test reports
-      if: always()
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: release-assets/test-reports-v${{ needs.validate.outputs.version }}.tar.gz
-        asset_name: test-reports-v${{ needs.validate.outputs.version }}.tar.gz
-        asset_content_type: application/gzip
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build production assets
+        run: |
+          npm run compile
+          npx playwright install --with-deps
+          npm run test:headless
+          npm run report
+
+      - name: Create release package
+        run: |
+          mkdir -p release-assets
+
+          # Create distribution package
+          tar -czf release-assets/playwrigth-automation-framework-v${{ needs.validate.outputs.version }}.tar.gz \
+            --exclude=node_modules \
+            --exclude=.git \
+            --exclude=test-results \
+            --exclude=.github \
+            .
+            
+          # Create test reports package
+          if [ -d "reports" ]; then
+            tar -czf release-assets/test-reports-v${{ needs.validate.outputs.version }}.tar.gz reports/
+          fi
+
+          # Create documentation package
+          tar -czf release-assets/documentation-v${{ needs.validate.outputs.version }}.tar.gz \
+            README.md \
+            docs/ \
+            *.md 2>/dev/null || echo "No additional docs found"
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          CHANGELOG=$(cat << 'EOF'
+          ## 🚀 Release v${{ needs.validate.outputs.version }}
+
+          ### ✨ Features
+          - Professional Playwrigth + Cucumber TypeScript automation framework
+          - Multi-browser testing support (Chromium, Firefox, WebKit)
+          - Comprehensive reporting with HTML and JSON outputs
+          - SOLID principles implementation with design patterns
+          - Advanced Page Object Model architecture
+
+          ### 🛠️ Technical Improvements
+          - Factory pattern for browser and page management
+          - Singleton configuration management
+          - Template method pattern for page inheritance
+          - Dependency injection for test context
+
+          ### 📊 Reporting Features
+          - Interactive HTML reports
+          - JSON data export
+          - Screenshot capture on failures
+          - Performance metrics and timing analysis
+          - Cross-browser compatibility reports
+
+          ### 🔧 Development Tools
+          - TypeScript compilation and validation
+          - ESLint and Prettier integration
+          - GitHub Actions CI/CD pipeline
+          - Automated security scanning
+          - Code quality analysis
+
+          ### 📦 Package Contents
+          - Framework source code
+          - Test reports and documentation
+          - Configuration files and examples
+          - GitHub Actions workflows
+
+          ---
+          **Installation:**
+          \`\`\`bash
+          npm install
+          npm run install:browsers
+          npm run test
+          \`\`\`
+
+          **Full Documentation:** See README.md for complete setup and usage instructions.
+          EOF
+          )
+
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ needs.validate.outputs.version }}
+          release_name: Release v${{ needs.validate.outputs.version }}
+          body: ${{ steps.changelog.outputs.changelog }}
+          draft: false
+          prerelease: ${{ github.event.inputs.prerelease == 'true' }}
+
+      - name: Upload release assets
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: release-assets/playwrigth-automation-framework-v${{ needs.validate.outputs.version }}.tar.gz
+          asset_name: playwrigth-automation-framework-v${{ needs.validate.outputs.version }}.tar.gz
+          asset_content_type: application/gzip
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: release-assets/test-reports-v${{ needs.validate.outputs.version }}.tar.gz
+          asset_name: test-reports-v${{ needs.validate.outputs.version }}.tar.gz
+          asset_content_type: application/gzip
 
   notify:
     name: Release Notifications
     runs-on: ubuntu-latest
     needs: [validate, release]
     if: always()
-    
+
     steps:
-    - name: Notify success
-      if: ${{ needs.release.result == 'success' }}
-      run: |
-        echo "🎉 Release v${{ needs.validate.outputs.version }} created successfully!"
-        echo "✅ All tests passed"
-        echo "📦 Release assets uploaded"
-        echo "📊 Test reports included"
-        
-    - name: Notify failure
-      if: ${{ needs.validate.result == 'failure' || needs.release.result == 'failure' }}
-      run: |
-        echo "❌ Release v${{ needs.validate.outputs.version }} failed!"
-        echo "Please check the logs and fix any issues before retrying."
+      - name: Notify success
+        if: ${{ needs.release.result == 'success' }}
+        run: |
+          echo "🎉 Release v${{ needs.validate.outputs.version }} created successfully!"
+          echo "✅ All tests passed"
+          echo "📦 Release assets uploaded"
+          echo "📊 Test reports included"
+
+      - name: Notify failure
+        if: ${{ needs.validate.result == 'failure' || needs.release.result == 'failure' }}
+        run: |
+          echo "❌ Release v${{ needs.validate.outputs.version }} failed!"
+          echo "Please check the logs and fix any issues before retrying."

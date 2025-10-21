@@ -3,154 +3,154 @@ name: Pull Request Validation
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-    branches: [ main, develop ]
+    branches: [main, develop]
 
 env:
-  NODE_VERSION: '18.x'
+  NODE_VERSION: "18.x"
 
 jobs:
   validate:
     name: PR Validation
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout PR
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-        
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
-        
-    - name: Install dependencies
-      run: npm ci
-      
-    - name: Lint code
-      run: |
-        echo "Running code linting..."
-        npx tsc --noEmit
-        
-    - name: Check code formatting
-      run: |
-        echo "Checking code formatting..."
-        npx prettier --check "src/**/*.ts" "tests/**/*.ts"
-        
-    - name: Install Playwright browsers
-      run: npx playwright install --with-deps chromium
-      
-    - name: Run smoke tests
-      run: npm run test:headless
-      env:
-        BROWSER: chromium
-        HEADLESS: true
-        
-    - name: Generate PR test report
-      if: always()
-      run: npm run report
-      
-    - name: Comment PR with results
-      if: always()
-      uses: actions/github-script@v8
-      with:
-        script: |
-          const fs = require('fs');
-          
-          let comment = '## 🧪 Test Results\n\n';
-          
-          try {
-            const reportPath = 'reports/cucumber-report.json';
-            if (fs.existsSync(reportPath)) {
-              const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
-              
-              let totalScenarios = 0;
-              let passedScenarios = 0;
-              
-              report.forEach(feature => {
-                feature.elements?.forEach(scenario => {
-                  totalScenarios++;
-                  let scenarioPassed = true;
-                  scenario.steps?.forEach(step => {
-                    if (step.result?.status === 'failed') {
-                      scenarioPassed = false;
-                    }
+      - name: Checkout PR
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint code
+        run: |
+          echo "Running code linting..."
+          npx tsc --noEmit
+
+      - name: Check code formatting
+        run: |
+          echo "Checking code formatting..."
+          npx prettier --check "src/**/*.ts" "tests/**/*.ts"
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run smoke tests
+        run: npm run test:headless
+        env:
+          BROWSER: chromium
+          HEADLESS: true
+
+      - name: Generate PR test report
+        if: always()
+        run: npm run report
+
+      - name: Comment PR with results
+        if: always()
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const fs = require('fs');
+
+            let comment = '## 🧪 Test Results\n\n';
+
+            try {
+              const reportPath = 'reports/cucumber-report.json';
+              if (fs.existsSync(reportPath)) {
+                const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+                
+                let totalScenarios = 0;
+                let passedScenarios = 0;
+                
+                report.forEach(feature => {
+                  feature.elements?.forEach(scenario => {
+                    totalScenarios++;
+                    let scenarioPassed = true;
+                    scenario.steps?.forEach(step => {
+                      if (step.result?.status === 'failed') {
+                        scenarioPassed = false;
+                      }
+                    });
+                    if (scenarioPassed) passedScenarios++;
                   });
-                  if (scenarioPassed) passedScenarios++;
                 });
-              });
-              
-              const passRate = totalScenarios > 0 ? ((passedScenarios / totalScenarios) * 100).toFixed(1) : 0;
-              
-              comment += `✅ **${passedScenarios}/${totalScenarios}** scenarios passed (${passRate}%)\n\n`;
-              
-              if (passedScenarios === totalScenarios) {
-                comment += '🎉 All tests are passing! Ready for review.\n';
+                
+                const passRate = totalScenarios > 0 ? ((passedScenarios / totalScenarios) * 100).toFixed(1) : 0;
+                
+                comment += `✅ **${passedScenarios}/${totalScenarios}** scenarios passed (${passRate}%)\n\n`;
+                
+                if (passedScenarios === totalScenarios) {
+                  comment += '🎉 All tests are passing! Ready for review.\n';
+                } else {
+                  comment += '❌ Some tests are failing. Please check the logs.\n';
+                }
               } else {
-                comment += '❌ Some tests are failing. Please check the logs.\n';
+                comment += '⚠️ No test report found.\n';
               }
-            } else {
-              comment += '⚠️ No test report found.\n';
+            } catch (error) {
+              comment += '❌ Error reading test results.\n';
             }
-          } catch (error) {
-            comment += '❌ Error reading test results.\n';
-          }
-          
-          comment += '\n---\n*Automated PR validation by GitHub Actions*';
-          
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: comment
-          });
+
+            comment += '\n---\n*Automated PR validation by GitHub Actions*';
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
 
   size-check:
     name: Bundle Size Check
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout PR
-      uses: actions/checkout@v4
-      
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
-        
-    - name: Install dependencies
-      run: npm ci
-      
-    - name: Build project
-      run: npm run compile
-      
-    - name: Check bundle size
-      run: |
-        echo "Checking compiled output size..."
-        if [ -d "dist" ]; then
-          BUNDLE_SIZE=$(du -sh dist | cut -f1)
-          echo "Bundle size: $BUNDLE_SIZE"
-          echo "bundle_size=$BUNDLE_SIZE" >> $GITHUB_ENV
-        fi
-        
-    - name: Comment bundle size
-      uses: actions/github-script@v8
-      with:
-        script: |
-          const bundleSize = process.env.bundle_size || 'Unknown';
-          
-          const comment = `## 📦 Bundle Size Report
-          
-          **Compiled output size:** ${bundleSize}
-          
-          ---
-          *Bundle size check by GitHub Actions*`;
-          
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: comment
-          });
+      - name: Checkout PR
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run compile
+
+      - name: Check bundle size
+        run: |
+          echo "Checking compiled output size..."
+          if [ -d "dist" ]; then
+            BUNDLE_SIZE=$(du -sh dist | cut -f1)
+            echo "Bundle size: $BUNDLE_SIZE"
+            echo "bundle_size=$BUNDLE_SIZE" >> $GITHUB_ENV
+          fi
+
+      - name: Comment bundle size
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const bundleSize = process.env.bundle_size || 'Unknown';
+
+            const comment = `## 📦 Bundle Size Report
+
+            **Compiled output size:** ${bundleSize}
+
+            ---
+            *Bundle size check by GitHub Actions*`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
