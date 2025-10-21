@@ -143,30 +143,75 @@ jobs:
       run: npm ci
       
     - name: Install complexity analysis tools
-      run: npm install --save-dev typescript-complexity
-      
+      run: |
+        # Install real code analysis tools
+        npm install --save-dev jscpd || echo "jscpd installation failed"
+        npm install --save-dev typescript-eslint-complexity || echo "typescript-eslint-complexity not available"
+        
     - name: Analyze code complexity
       run: |
-        echo "Analyzing code complexity..."
-        find src -name "*.ts" -exec wc -l {} + | sort -nr > complexity-report.txt
-        echo "=== Lines of Code per File ===" >> complexity-report.txt
+        echo "📊 Analyzing code complexity..."
+        
+        # Create reports directory
+        mkdir -p reports
+        
+        # Basic line count analysis
+        echo "=== Lines of Code Analysis ===" > reports/complexity-report.txt
+        find src -name "*.ts" -exec wc -l {} + | sort -nr >> reports/complexity-report.txt
+        
+        # Function and class count
+        echo "" >> reports/complexity-report.txt
+        echo "=== Code Structure Analysis ===" >> reports/complexity-report.txt
+        echo "Functions:" >> reports/complexity-report.txt
+        grep -r "function\|=>" src --include="*.ts" | wc -l >> reports/complexity-report.txt
+        echo "Classes:" >> reports/complexity-report.txt
+        grep -r "class " src --include="*.ts" | wc -l >> reports/complexity-report.txt
+        echo "Interfaces:" >> reports/complexity-report.txt
+        grep -r "interface " src --include="*.ts" | wc -l >> reports/complexity-report.txt
+        
+        # File size analysis
+        echo "" >> reports/complexity-report.txt
+        echo "=== File Size Analysis ===" >> reports/complexity-report.txt
+        find src -name "*.ts" -exec du -h {} + | sort -hr >> reports/complexity-report.txt
+        
+        # Run duplicate code detection if jscpd is available
+        if command -v jscpd &> /dev/null; then
+          echo "" >> reports/complexity-report.txt
+          echo "=== Duplicate Code Analysis ===" >> reports/complexity-report.txt
+          npx jscpd src --reporters console,json --output reports/ || echo "JSCPD analysis failed" >> reports/complexity-report.txt
+        fi
+        
+        # TypeScript specific analysis
+        echo "" >> reports/complexity-report.txt
+        echo "=== TypeScript Analysis ===" >> reports/complexity-report.txt
+        echo "Total TypeScript files:" >> reports/complexity-report.txt
+        find src -name "*.ts" | wc -l >> reports/complexity-report.txt
+        echo "Average lines per file:" >> reports/complexity-report.txt
+        find src -name "*.ts" -exec wc -l {} + | awk '{sum+=$1; count++} END {if(count>0) print sum/count; else print 0}' >> reports/complexity-report.txt
         
     - name: Generate complexity report
       run: |
-        echo "## Code Complexity Report" > complexity-summary.md
-        echo "" >> complexity-summary.md
-        echo "### File Size Analysis" >> complexity-summary.md
-        echo "\`\`\`" >> complexity-summary.md
-        head -20 complexity-report.txt >> complexity-summary.md
-        echo "\`\`\`" >> complexity-summary.md
+        echo "📊 Generating complexity summary..."
+        echo "## Code Complexity Report" > reports/complexity-summary.md
+        echo "" >> reports/complexity-summary.md
+        echo "### Generated: $(date)" >> reports/complexity-summary.md
+        echo "" >> reports/complexity-summary.md
+        echo "### File Size Analysis" >> reports/complexity-summary.md
+        echo "\`\`\`" >> reports/complexity-summary.md
+        head -20 reports/complexity-report.txt >> reports/complexity-summary.md
+        echo "\`\`\`" >> reports/complexity-summary.md
+        
+        # Display summary
+        echo "📈 Complexity analysis completed!"
+        cat reports/complexity-summary.md
         
     - name: Upload complexity results
       uses: actions/upload-artifact@v4
       with:
         name: complexity-analysis
         path: |
-          complexity-report.txt
-          complexity-summary.md
+          reports/complexity-report.txt
+          reports/complexity-summary.md
         retention-days: 7
 
   documentation:
