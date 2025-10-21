@@ -53,7 +53,7 @@ jobs:
       
     - name: Comment PR with results
       if: always()
-      uses: actions/github-script@v7
+      uses: actions/github-script@v8
       with:
         script: |
           const fs = require('fs');
@@ -136,7 +136,7 @@ jobs:
         fi
         
     - name: Comment bundle size
-      uses: actions/github-script@v7
+      uses: actions/github-script@v8
       with:
         script: |
           const bundleSize = process.env.bundle_size || 'Unknown';
