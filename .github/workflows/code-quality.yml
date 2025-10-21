@@ -38,17 +38,11 @@ jobs:
           echo "✅ Using modern eslint.config.js (already in repository)"
           ls -la eslint.config.js || echo "❌ ESLint config not found"
 
-      - name: Create Prettier config
+      - name: Verify Prettier configuration
         run: |
-          cat > .prettierrc << 'EOF'
-          {
-            "semi": true,
-            "trailingComma": "es5",
-            "singleQuote": true,
-            "printWidth": 100,
-            "tabWidth": 2
-          }
-          EOF
+          echo "✅ Using existing .prettierrc.json configuration"
+          ls -la .prettierrc.json || echo "❌ Prettier config not found"
+          cat .prettierrc.json
 
       - name: Run ESLint with multiple formats
         run: |
@@ -72,7 +66,7 @@ jobs:
           npm run lint
 
       - name: Check Prettier formatting
-        run: npx prettier --check "src/**/*.ts" "tests/**/*.ts" "*.json" "*.md"
+        run: npm run format:check
 
       - name: TypeScript compilation check
         run: npx tsc --noEmit --strict
