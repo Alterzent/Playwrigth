@@ -31,30 +31,12 @@ jobs:
       
     - name: Install additional linting tools
       run: |
-        npm install --save-dev eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin prettier
+        npm install --save-dev eslint-formatter-compact eslint-formatter-html eslint-formatter-json prettier
         
-    - name: Create ESLint config
+    - name: Verify ESLint configuration
       run: |
-        cat > .eslintrc.json << 'EOF'
-        {
-          "parser": "@typescript-eslint/parser",
-          "plugins": ["@typescript-eslint"],
-          "extends": [
-            "eslint:recommended",
-            "@typescript-eslint/recommended"
-          ],
-          "rules": {
-            "@typescript-eslint/no-unused-vars": "error",
-            "@typescript-eslint/no-explicit-any": "warn",
-            "prefer-const": "error",
-            "no-var": "error"
-          },
-          "env": {
-            "node": true,
-            "es6": true
-          }
-        }
-        EOF
+        echo "✅ Using modern eslint.config.js (already in repository)"
+        ls -la eslint.config.js || echo "❌ ESLint config not found"
         
     - name: Create Prettier config
       run: |
@@ -68,8 +50,26 @@ jobs:
         }
         EOF
         
-    - name: Run ESLint
-      run: npx eslint "src/**/*.ts" "tests/**/*.ts" --format=compact
+    - name: Run ESLint with multiple formats
+      run: |
+        echo "🔍 Running ESLint analysis..."
+        
+        # Create reports directory
+        mkdir -p reports
+        
+        # Run ESLint with different formatters
+        echo "📊 Generating compact report..."
+        npm run lint:compact || echo "ESLint found issues (compact format)"
+        
+        echo "📋 Generating HTML report..."
+        npm run lint:html || echo "ESLint found issues (HTML format)"
+        
+        echo "📄 Generating JSON report..."
+        npm run lint:json || echo "ESLint found issues (JSON format)"
+        
+        # Run standard lint for CI/CD decision making
+        echo "✅ Running standard lint check..."
+        npm run lint
       
     - name: Check Prettier formatting
       run: npx prettier --check "src/**/*.ts" "tests/**/*.ts" "*.json" "*.md"
@@ -83,7 +83,8 @@ jobs:
       with:
         name: lint-results
         path: |
-          eslint-report.json
+          reports/eslint-report.html
+          reports/eslint-report.json
         retention-days: 7
 
   security:
