@@ -1,4 +1,10 @@
-import { Before, After, BeforeAll, AfterAll, setWorldConstructor } from '@cucumber/cucumber';
+import {
+  Before,
+  After,
+  BeforeAll,
+  AfterAll,
+  setWorldConstructor,
+} from '@cucumber/cucumber';
 import { ITestContext } from '../src/interfaces';
 import { BrowserManager } from '../src/core/BrowserManager';
 import { StringUtils } from '../src/utils/CommonUtils';

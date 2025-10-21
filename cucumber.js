@@ -4,35 +4,35 @@ const config = {
     require: ['tests/steps/**/*.ts', 'tests/hooks.ts'],
     format: ['progress', 'json:reports/cucumber-report.json'],
     formatOptions: {
-      snippetInterface: 'async-await'
+      snippetInterface: 'async-await',
     },
     dryRun: false,
-    failFast: false
+    failFast: false,
   },
   chrome: {
     requireModule: ['ts-node/register'],
     require: ['tests/steps/**/*.ts', 'tests/hooks.ts'],
     format: ['progress', 'json:reports/cucumber-report.json'],
     formatOptions: {
-      snippetInterface: 'async-await'
+      snippetInterface: 'async-await',
     },
     worldParameters: {
       browser: 'chromium',
-      headless: false
-    }
+      headless: false,
+    },
   },
   headless: {
     requireModule: ['ts-node/register'],
     require: ['tests/steps/**/*.ts', 'tests/hooks.ts'],
     format: ['progress', 'json:reports/cucumber-report.json'],
     formatOptions: {
-      snippetInterface: 'async-await'
+      snippetInterface: 'async-await',
     },
     worldParameters: {
       browser: 'chromium',
-      headless: true
-    }
-  }
+      headless: true,
+    },
+  },
 };
 
 module.exports = config;

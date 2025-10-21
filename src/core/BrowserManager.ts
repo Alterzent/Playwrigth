@@ -1,5 +1,16 @@
-import { chromium, firefox, webkit, Browser, BrowserContext, Page } from '@playwright/test';
-import { IBrowserManager, BrowserLaunchOptions, BrowserContextOptions } from '../interfaces';
+import {
+  chromium,
+  firefox,
+  webkit,
+  Browser,
+  BrowserContext,
+  Page,
+} from '@playwright/test';
+import {
+  IBrowserManager,
+  BrowserLaunchOptions,
+  BrowserContextOptions,
+} from '../interfaces';
 import { TestConfig } from './TestConfig';
 
 export class BrowserManager implements IBrowserManager {
@@ -19,18 +30,18 @@ export class BrowserManager implements IBrowserManager {
     const launchOptions = {
       headless: this.config.isHeadless(),
       slowMo: defaultOptions?.slowMo || 0,
-      ...options
+      ...options,
     };
 
     switch (browserType) {
-    case 'firefox':
-      this.browser = await firefox.launch(launchOptions);
-      break;
-    case 'webkit':
-      this.browser = await webkit.launch(launchOptions);
-      break;
-    default:
-      this.browser = await chromium.launch(launchOptions);
+      case 'firefox':
+        this.browser = await firefox.launch(launchOptions);
+        break;
+      case 'webkit':
+        this.browser = await webkit.launch(launchOptions);
+        break;
+      default:
+        this.browser = await chromium.launch(launchOptions);
     }
   }
 
@@ -43,9 +54,9 @@ export class BrowserManager implements IBrowserManager {
       viewport: this.config.getViewport(),
       recordVideo: {
         dir: this.config.getReportingConfig().videoPath,
-        size: this.config.getViewport()
+        size: this.config.getViewport(),
       },
-      ...options
+      ...options,
     };
 
     this.context = await this.browser.newContext(contextOptions);

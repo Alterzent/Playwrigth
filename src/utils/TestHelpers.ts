@@ -16,21 +16,21 @@ export class TestDataProvider {
   public static getValidCredentials() {
     return {
       username: 'standard_user',
-      password: 'secret_sauce'
+      password: 'secret_sauce',
     };
   }
 
   public static getLockedUserCredentials() {
     return {
       username: 'locked_out_user',
-      password: 'secret_sauce'
+      password: 'secret_sauce',
     };
   }
 
   public static getProblemUserCredentials() {
     return {
       username: 'problem_user',
-      password: 'secret_sauce'
+      password: 'secret_sauce',
     };
   }
 
@@ -39,7 +39,7 @@ export class TestDataProvider {
       { username: 'invalid_user', password: 'secret_sauce' },
       { username: 'standard_user', password: 'wrong_pass' },
       { username: 'empty_user', password: '' },
-      { username: '', password: 'secret_sauce' }
+      { username: '', password: 'secret_sauce' },
     ];
   }
 }

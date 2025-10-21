@@ -8,13 +8,13 @@ export class TestConfig {
     browsers: {
       chromium: { headless: false, slowMo: 500 },
       firefox: { headless: false, slowMo: 500 },
-      webkit: { headless: false, slowMo: 500 }
+      webkit: { headless: false, slowMo: 500 },
     },
     reporting: {
       screenshotPath: './test-results/screenshots/',
       videoPath: './test-results/videos/',
-      reportPath: './reports/'
-    }
+      reportPath: './reports/',
+    },
   };
 
   private constructor() {}
@@ -39,7 +39,9 @@ export class TestConfig {
   }
 
   public getBrowserConfig(browserName: string) {
-    return this.config.browsers[browserName as keyof typeof this.config.browsers];
+    return this.config.browsers[
+      browserName as keyof typeof this.config.browsers
+    ];
   }
 
   public getReportingConfig() {

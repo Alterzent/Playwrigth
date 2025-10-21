@@ -9,7 +9,7 @@ export class LoginPage extends BasePage implements ILoginPage {
     usernameField: '[data-test="username"]',
     passwordField: '[data-test="password"]',
     loginButton: '[data-test="login-button"]',
-    errorMessage: '[data-test="error"]'
+    errorMessage: '[data-test="error"]',
   };
 
   constructor(page: Page) {

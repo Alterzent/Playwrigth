@@ -1,0 +1,50 @@
+# Build outputs
+dist/
+build/
+*.min.js
+*.bundle.js
+
+# Dependencies
+node_modules/
+
+# Reports and generated files
+reports/
+test-results/
+coverage/
+
+# Lock files
+package-lock.json
+yarn.lock
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Generated documentation
+docs/
+
+# Git files
+.git/
+.gitignore
+
+# Binary files
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.ico
+*.pdf
+*.zip
+*.tar.gz

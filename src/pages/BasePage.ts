@@ -32,9 +32,12 @@ export abstract class BasePage implements IPage {
     await this.page.waitForLoadState('networkidle');
   }
 
-  protected async waitForElement(selector: string, timeout?: number): Promise<void> {
+  protected async waitForElement(
+    selector: string,
+    timeout?: number
+  ): Promise<void> {
     await this.page.waitForSelector(selector, {
-      timeout: timeout || this.config.getTimeout()
+      timeout: timeout || this.config.getTimeout(),
     });
   }
 

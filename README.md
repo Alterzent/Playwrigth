@@ -1,24 +1,21 @@
 # Playwrigth Automation Framework
 
-Professional test automation framework using Playwright with Cucumber and TypeScript for end-to-end testing.
-
-
+Professional test automation framework using Playwright with Cucumber and TypeScript for end-to-end
+testing.
 
 ## SetupProfessional test automation framework using Playwright with Cucumber and TypeScript for E2E testing.
-
-
 
 ### Prerequisites
 
 - Node.js (version 14 or higher)
 
-- npm or yarn## SetupProfessional test automation framework using Playwright with Cucumber and TypeScript for E2E testing.This test automation project uses Playwright with Cucumber and TypeScript to perform E2E testing on SauceDemo.
-
-
+- npm or yarn## SetupProfessional test automation framework using Playwright with Cucumber and
+  TypeScript for E2E testing.This test automation project uses Playwright with Cucumber and
+  TypeScript to perform E2E testing on SauceDemo.
 
 ### Installation
 
-```bash
+````bash
 
 npm install### Prerequisites
 
@@ -42,13 +39,13 @@ npm run test:chrome     # Run tests with Chrome visible
 
 npm run test:headless   # Run tests in headless mode explicitly```bash
 
-```
+````
 
 npm install### Prerequisites### Prerequisites
 
 ### Reports and Analysis
 
-```bashnpm run install:browsers
+````bashnpm run install:browsers
 
 npm run report          # Generate HTML report from existing JSON
 
@@ -74,37 +71,37 @@ npm run clean          # Remove generated files and directories
 
 npm run install:browsers # Install Playwright browser binaries```bash
 
-```
+````
 
-npm test                # Default headless execution### Installation### Installation
+npm test # Default headless execution### Installation### Installation
 
 ## Project Architecture
 
-npm run test:chrome     # Chrome with GUI
+npm run test:chrome # Chrome with GUI
 
 ### Directory Structure
 
-```npm run test:headless   # Explicit headless mode```bash1. Clone the repository
+`npm run test:headless   # Explicit headless mode`bash1. Clone the repository
 
 src/
 
 ├── core/```
 
-│   ├── BrowserManager.ts    # Browser lifecycle management
+│ ├── BrowserManager.ts # Browser lifecycle management
 
-│   └── TestConfig.ts        # Centralized configurationnpm install2. Install dependencies:
+│ └── TestConfig.ts # Centralized configurationnpm install2. Install dependencies:
 
 ├── interfaces/
 
-│   └── index.ts             # TypeScript interfaces and contracts### Reports and Analysis
+│ └── index.ts # TypeScript interfaces and contracts### Reports and Analysis
 
 ├── pages/
 
-│   ├── BasePage.ts          # Abstract base class for all pages```bashnpm run install:browsers   ```bash
+│ ├── BasePage.ts # Abstract base class for all pages`bashnpm run install:browsers   `bash
 
-│   ├── LoginPage.ts         # Login page implementation
+│ ├── LoginPage.ts # Login page implementation
 
-│   └── ProductsPage.ts      # Products page implementationnpm run report          # Generate HTML report from JSON
+│ └── ProductsPage.ts # Products page implementationnpm run report # Generate HTML report from JSON
 
 └── utils/
 
@@ -112,31 +109,27 @@ src/
 
     └── TestHelpers.ts       # Test-specific helper functions
 
-npm run open:report     # Open HTML report in browser
+npm run open:report # Open HTML report in browser
 
 tests/
 
-├── steps/npm run analyze         # Display test execution summary   ```
+├── steps/npm run analyze # Display test execution summary ```
 
-│   └── login.steps.ts       # Cucumber step definitions
+│ └── login.steps.ts # Cucumber step definitions
 
-└── hooks.ts                 # Test lifecycle hooksnpm run test:analyze    # Run tests and show analysis
-
-
+└── hooks.ts # Test lifecycle hooksnpm run test:analyze # Run tests and show analysis
 
 features/```## Architecture3. Install Playwright browsers:
 
-└── login.feature            # Gherkin test scenarios
-
-
+└── login.feature # Gherkin test scenarios
 
 reports/
 
-├── cucumber-report.json     # Raw test execution data### Development   ```bash
+├── cucumber-report.json # Raw test execution data### Development ```bash
 
-└── cucumber-report.html     # Interactive HTML report
+└── cucumber-report.html # Interactive HTML report
 
-```bash
+```````bash
 
 scripts/
 
@@ -172,7 +165,7 @@ scripts/
 
 
 
-**Dependency Injection**src/│   ├── BrowserManager.ts    
+**Dependency Injection**src/│   ├── BrowserManager.ts
 
 - `TestWorld`: Injects dependencies into step definitions
 
@@ -184,7 +177,7 @@ scripts/
 
 
 
-### SOLID Principles Application│   └── TestConfig.ts        
+### SOLID Principles Application│   └── TestConfig.ts
 
 
 
@@ -192,7 +185,7 @@ scripts/
 
 - Each class has a single, well-defined purpose
 
-- Clear separation of concerns between layers│   └── index.ts             
+- Clear separation of concerns between layers│   └── index.ts
 
 
 
@@ -200,7 +193,7 @@ scripts/
 
 - `BasePage` allows extension without modification
 
-- New page types can be added without changing existing code│   ├── BasePage.ts          
+- New page types can be added without changing existing code│   ├── BasePage.ts
 
 
 
@@ -208,7 +201,7 @@ scripts/
 
 - All page implementations can be used interchangeably through interfaces
 
-│   └── ProductsPage.ts      
+│   └── ProductsPage.ts
 
 **Interface Segregation Principle**
 
@@ -216,7 +209,7 @@ scripts/
 
 
 
-**Dependency Inversion Principle**    ├── CommonUtils.ts       
+**Dependency Inversion Principle**    ├── CommonUtils.ts
 
 - High-level modules depend on abstractions, not concrete implementations
 
@@ -240,7 +233,7 @@ tests/│   └── ProductsPage.ts      ├── page-objects/
 
 
 
-## Test Data Management└── hooks.ts                 
+## Test Data Management└── hooks.ts
 
 
 
@@ -264,7 +257,7 @@ Structured test data providers ensure maintainable and reusable test scenarios: 
 
 - Browser-specific configurations
 
-- Execution mode parameters├── cucumber-report.json     
+- Execution mode parameters├── cucumber-report.json
 
 
 
@@ -316,7 +309,7 @@ Structured test data providers ensure maintainable and reusable test scenarios: 
 
 - Total scenarios executed with pass/fail breakdown
 
-- Step-level execution details and timing- **Open/Closed**: BasePage allows extension without modification└── login.feature            
+- Step-level execution details and timing- **Open/Closed**: BasePage allows extension without modification└── login.feature
 
 - Overall test suite performance metrics
 
@@ -386,13 +379,11 @@ npm run analyze         # Analyze existing test results
 
 npm run report          # Generate HTML from existing JSON data- Invalid credential combinations
 
-```
+```````
 
 - Test environment configurationsnpm run test:chrome
 
 ## Test Scenarios Coverage
-
-
 
 The framework includes comprehensive test coverage for:
 
@@ -404,21 +395,19 @@ The framework includes comprehensive test coverage for:
 
 - Failed login attempts with invalid credentials
 
-- Locked user account handlingThe framework provides comprehensive reporting capabilities:- **Single Responsibility**: Each class has one clear purpose# Run tests in headless mode
+- Locked user account handlingThe framework provides comprehensive reporting capabilities:- **Single
+  Responsibility**: Each class has one clear purpose# Run tests in headless mode
 
 - Multiple invalid credential combinations
 
-
-
 **Navigation and User Flow**
 
-- Page transitions and redirects### Available Report Types- **Open/Closed**: BasePage allows extension without modificationnpm run test:headless
+- Page transitions and redirects### Available Report Types- **Open/Closed**: BasePage allows
+  extension without modificationnpm run test:headless
 
 - Element visibility and interaction
 
 - Error message validation- **JSON Report**: Raw test data in `reports/cucumber-report.json`
-
-
 
 ## GitHub Actions CI/CD
 
@@ -427,36 +416,42 @@ The project includes comprehensive GitHub Actions workflows for professional dev
 ### Automated Workflows
 
 **CI/CD Pipeline** (`.github/workflows/ci-cd.yml`)
+
 - Multi-browser testing (Chromium, Firefox, WebKit)
 - TypeScript compilation validation
 - Automated test execution on push/PR
 - Artifact management and retention
 
 **Pull Request Validation** (`.github/workflows/pr-validation.yml`)
+
 - Code quality checks and linting
 - Smoke test execution
 - Bundle size analysis
 - Automated PR comments with results
 
 **Code Quality** (`.github/workflows/code-quality.yml`)
+
 - ESLint and Prettier formatting checks
 - Security vulnerability scanning
 - Code complexity analysis
 - Documentation completeness validation
 
 **Test Reports** (`.github/workflows/test-reports.yml`)
+
 - Comprehensive cross-browser test execution
 - HTML report generation and publishing
 - GitHub Pages deployment
 - Test dashboard creation
 
 **Release Management** (`.github/workflows/release.yml`)
+
 - Automated semantic versioning
 - Release asset packaging
 - Changelog generation
 - GitHub release creation
 
 **Security & Dependencies** (`.github/workflows/security.yml`)
+
 - Dependency vulnerability monitoring
 - Automated security scans
 - License compliance checking
@@ -465,16 +460,19 @@ The project includes comprehensive GitHub Actions workflows for professional dev
 ### GitHub Features
 
 **Dependabot Integration**
+
 - Automated dependency updates
 - Security patch management
 - Weekly update scheduling
 
 **Issue Templates**
+
 - Bug report templates
 - Feature request forms
 - Structured issue creation
 
 **Pull Request Templates**
+
 - Comprehensive PR checklists
 - Code review guidelines
 - Testing verification
@@ -498,15 +496,11 @@ The project includes comprehensive GitHub Actions workflows for professional dev
 
 ## Framework Extension Guide- **HTML Report**: Interactive visual report in `reports/cucumber-report.html`- **Liskov Substitution**: All pages implement IPage interface```
 
-
-
 ### Adding New Page Objects- **Console Analysis**: Detailed execution statistics
-
-
 
 1. **Create Page Class**- **Interface Segregation**: Specific interfaces for different page types
 
-   ```typescript
+   ````typescript
 
    export class NewPage extends BasePage implements INewPage {### Report Features
 
@@ -518,7 +512,7 @@ The project includes comprehensive GitHub Actions workflows for professional dev
 
    ```- Step-by-step execution details
 
-
+   ````
 
 2. **Define Interface**- Performance metrics and timing analysis```bash
 
@@ -536,7 +530,7 @@ The project includes comprehensive GitHub Actions workflows for professional dev
 
 3. **Add to PageFactory**
 
-   ```typescriptnpm run compile
+   ```````typescriptnpm run compile
 
    public static createNewPage(page: Page): NewPage {
 
@@ -545,16 +539,13 @@ The project includes comprehensive GitHub Actions workflows for professional dev
    }
 
    ``````bash### Test Execution
-
-
+   ```````
 
 ### Adding New Test Scenarios# Execute tests and generate reports
 
-
-
 1. **Update Feature File**npm run test:report```bash# Clean generated files
 
-   ```gherkin
+   ````gherkin
 
    Scenario: New test scenario
 
@@ -566,9 +557,9 @@ The project includes comprehensive GitHub Actions workflows for professional dev
 
    ```npm run analyze
 
+   ````
 
-
-2. **Implement Step Definitions**npm run test:chrome     # Chrome with GUI
+2. **Implement Step Definitions**npm run test:chrome # Chrome with GUI
 
    ```typescript
 
@@ -580,7 +571,7 @@ The project includes comprehensive GitHub Actions workflows for professional dev
 
    ```
 
-```
+````
 
 ### Browser Configuration
 
@@ -626,7 +617,7 @@ npm run compile         # TypeScript compilation
 
 
 
-**Test Design**- Failed login with invalid credentials  
+**Test Design**- Failed login with invalid credentials
 
 - Write clear, descriptive scenario names
 
@@ -660,21 +651,22 @@ npm run compile         # TypeScript compilation
 
    npm run install:browsers- Firefox
 
-   ```
+````
 
 ## Test Data- Safari (on macOS)
 
 2. **TypeScript Compilation Errors**
 
-   ```bash
+   ````bash
 
    npm run compile
 
    ```Structured test data management with dedicated providers:### Reports
 
+   ````
 
-
-3. **Missing Dependencies**- Valid user credentials- Reports are generated in JSON format at `reports/cucumber-report.json`
+3. **Missing Dependencies**- Valid user credentials- Reports are generated in JSON format at
+   `reports/cucumber-report.json`
 
    ```bash
 
@@ -685,52 +677,52 @@ npm run compile         # TypeScript compilation
 - Test environment configurations- Test videos are saved in `test-results/videos/`
 
 4. **Report Generation Issues**
-
    - Ensure JSON report exists before generating HTML
 
    - Check file permissions in reports directory
 
    - Verify all dependencies are installed## Reporting## Writing New Tests
 
-
-
 **Debug Information**
 
 - Check console output for detailed error messages
 
-- Review screenshot and video artifacts for failed testsAutomated reporting with:1. **Add scenarios in `.feature`**:
+- Review screenshot and video artifacts for failed testsAutomated reporting with:1. **Add scenarios
+  in `.feature`**:
 
 - Examine JSON report for step-level execution details
-- JSON format test results   ```gherkin
+- JSON format test results ```gherkin
 
-- Screenshot capture on failures   Scenario: My new scenario
+- Screenshot capture on failures Scenario: My new scenario
 
-- Video recording capabilities     Given I navigate to the login page
+- Video recording capabilities Given I navigate to the login page
 
-- Timestamped artifact naming     When I perform some action
+- Timestamped artifact naming When I perform some action
 
-     Then I should see expected result
+  Then I should see expected result
 
-## Extension   ```
-
-
+## Extension ```
 
 Framework designed for easy extension:2. **Implement steps in `.steps.ts`**:
 
-1. Create new page classes extending BasePage   ```typescript
+1. Create new page classes extending BasePage ```typescript
 
-2. Implement required interfaces   When('I perform some action', async function (this: CustomWorld) {
+2. Implement required interfaces When('I perform some action', async function (this: CustomWorld) {
 
-3. Add corresponding step definitions     // Step implementation
+3. Add corresponding step definitions // Step implementation
 
-4. Update feature files with new scenarios   });
+4. Update feature files with new scenarios });
+
    ```
 
-3. **Create Page Objects** for new pages in `page-objects/`
+   ```
+
+5. **Create Page Objects** for new pages in `page-objects/`
 
 ## Troubleshooting
 
 If you encounter issues:
+
 1. Make sure browsers are installed: `npm run install:browsers`
 2. Compile the project: `npm run compile`
 3. Check for TypeScript errors

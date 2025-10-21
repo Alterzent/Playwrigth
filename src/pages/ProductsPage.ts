@@ -12,7 +12,7 @@ export class ProductsPage extends BasePage implements IProductsPage {
     cartButton: '.shopping_cart_link',
     cartBadge: '.shopping_cart_badge',
     hamburgerMenu: '#react-burger-menu-btn',
-    logoutLink: '#logout_sidebar_link'
+    logoutLink: '#logout_sidebar_link',
   };
 
   constructor(page: Page) {

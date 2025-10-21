@@ -12,18 +12,24 @@ Given('I navigate to the login page', async function (this: TestWorld) {
   expect(isLoaded).toBeTruthy();
 });
 
-When('I login with username {string} and password {string}', async function (this: TestWorld, username: string, password: string) {
-  const loginPage = PageFactory.createLoginPage(this.page);
-  await loginPage.login(username, password);
-});
+When(
+  'I login with username {string} and password {string}',
+  async function (this: TestWorld, username: string, password: string) {
+    const loginPage = PageFactory.createLoginPage(this.page);
+    await loginPage.login(username, password);
+  }
+);
 
-Then('I should be redirected to the products page', async function (this: TestWorld) {
-  await expect(this.page).toHaveURL(/.*inventory.html/);
+Then(
+  'I should be redirected to the products page',
+  async function (this: TestWorld) {
+    await expect(this.page).toHaveURL(/.*inventory.html/);
 
-  const productsPage = PageFactory.createProductsPage(this.page);
-  const isLoaded = await productsPage.isLoaded();
-  expect(isLoaded).toBeTruthy();
-});
+    const productsPage = PageFactory.createProductsPage(this.page);
+    const isLoaded = await productsPage.isLoaded();
+    expect(isLoaded).toBeTruthy();
+  }
+);
 
 Then('I should see the products title', async function (this: TestWorld) {
   const productsPage = PageFactory.createProductsPage(this.page);
@@ -41,13 +47,16 @@ Then('I should see an error message', async function (this: TestWorld) {
   expect(errorMessage).toContain('Epic sadface');
 });
 
-Then('I should see an error message containing {string}', async function (this: TestWorld, expectedText: string) {
-  const loginPage = PageFactory.createLoginPage(this.page);
-  const errorMessage = await loginPage.getErrorMessage();
+Then(
+  'I should see an error message containing {string}',
+  async function (this: TestWorld, expectedText: string) {
+    const loginPage = PageFactory.createLoginPage(this.page);
+    const errorMessage = await loginPage.getErrorMessage();
 
-  expect(ValidationUtils.isNotEmpty(errorMessage)).toBeTruthy();
-  expect(errorMessage).toContain(expectedText);
-});
+    expect(ValidationUtils.isNotEmpty(errorMessage)).toBeTruthy();
+    expect(errorMessage).toContain(expectedText);
+  }
+);
 
 Then('I should remain on the login page', async function (this: TestWorld) {
   await expect(this.page).toHaveURL(/.*saucedemo.com\/?$/);

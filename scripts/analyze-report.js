@@ -10,10 +10,12 @@ class TestReportAnalyzer {
   loadReportData() {
     try {
       if (!fs.existsSync(this.jsonReportPath)) {
-        console.log('⚠️  No test report found. Please run tests first with: npm run test');
+        console.log(
+          '⚠️  No test report found. Please run tests first with: npm run test'
+        );
         return null;
       }
-      
+
       const data = fs.readFileSync(this.jsonReportPath, 'utf8');
       return JSON.parse(data);
     } catch (error) {
@@ -38,12 +40,12 @@ class TestReportAnalyzer {
       feature.elements?.forEach(scenario => {
         if (scenario.type === 'scenario') {
           totalScenarios++;
-          
+
           let scenarioPassed = true;
           scenario.steps?.forEach(step => {
             totalSteps++;
             totalDuration += step.result?.duration || 0;
-            
+
             switch (step.result?.status) {
               case 'passed':
                 passedSteps++;
@@ -57,7 +59,7 @@ class TestReportAnalyzer {
                 break;
             }
           });
-          
+
           if (scenarioPassed) {
             passedScenarios++;
           } else {
@@ -72,18 +74,24 @@ class TestReportAnalyzer {
         total: totalScenarios,
         passed: passedScenarios,
         failed: failedScenarios,
-        passRate: totalScenarios > 0 ? ((passedScenarios / totalScenarios) * 100).toFixed(2) : 0
+        passRate:
+          totalScenarios > 0
+            ? ((passedScenarios / totalScenarios) * 100).toFixed(2)
+            : 0,
       },
       steps: {
         total: totalSteps,
         passed: passedSteps,
         failed: failedSteps,
-        skipped: skippedSteps
+        skipped: skippedSteps,
       },
       duration: {
         total: (totalDuration / 1000000000).toFixed(2), // Convert nanoseconds to seconds
-        average: totalSteps > 0 ? ((totalDuration / totalSteps) / 1000000).toFixed(2) : 0 // milliseconds
-      }
+        average:
+          totalSteps > 0
+            ? (totalDuration / totalSteps / 1000000).toFixed(2)
+            : 0, // milliseconds
+      },
     };
   }
 
@@ -99,16 +107,20 @@ class TestReportAnalyzer {
     console.log('            🧪 PLAYWRIGTH TEST ANALYSIS');
     console.log('='.repeat(60));
     console.log(`📊 Total Scenarios: ${summary.scenarios.total}`);
-    console.log(`✅ Passed: ${summary.scenarios.passed} | ❌ Failed: ${summary.scenarios.failed}`);
+    console.log(
+      `✅ Passed: ${summary.scenarios.passed} | ❌ Failed: ${summary.scenarios.failed}`
+    );
     console.log(`📈 Pass Rate: ${summary.scenarios.passRate}%`);
     console.log('-'.repeat(60));
     console.log(`⚡ Total Steps: ${summary.steps.total}`);
-    console.log(`✅ Passed: ${summary.steps.passed} | ❌ Failed: ${summary.steps.failed} | ⏭️ Skipped: ${summary.steps.skipped}`);
+    console.log(
+      `✅ Passed: ${summary.steps.passed} | ❌ Failed: ${summary.steps.failed} | ⏭️ Skipped: ${summary.steps.skipped}`
+    );
     console.log('-'.repeat(60));
     console.log(`⏱️ Total Duration: ${summary.duration.total}s`);
     console.log(`📊 Average Step Duration: ${summary.duration.average}ms`);
     console.log('='.repeat(60));
-    
+
     if (summary.scenarios.failed > 0) {
       console.log('⚠️  Some tests failed. Check the HTML report for details.');
     } else if (summary.scenarios.total > 0) {
