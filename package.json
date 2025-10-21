@@ -28,7 +28,8 @@
     "test:report": "npm run test:headless && npm run report",
     "open:report": "start reports/cucumber-report.html",
     "analyze": "node scripts/analyze-report.js",
-    "test:analyze": "npm run test:headless && npm run analyze"
+    "test:analyze": "npm run test:headless && npm run analyze",
+    "prepare": "husky"
   },
   "keywords": ["playwright", "cucumber", "typescript", "automation", "testing", "e2e", "framework"],
   "author": "Alterzent",
