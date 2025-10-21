@@ -34,7 +34,7 @@
     "@cucumber/cucumber": "^12.2.0",
     "@cucumber/html-formatter": "^22.0.0",
     "@playwright/test": "^1.39.0",
-    "@types/node": "^20.8.9",
+    "@types/node": "^24.9.1",
     "cucumber-html-reporter": "^7.2.0",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
