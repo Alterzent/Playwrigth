@@ -12,8 +12,8 @@
     "install:browsers": "npx playwright install",
     "clean": "rmdir /s /q dist reports test-results 2>nul || echo Carpetas limpiadas",
     "compile": "tsc",
-    "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\" \"step-definitions/**/*.ts\" \"*.json\" \"*.md\"",
-    "format:check": "prettier --check \"src/**/*.ts\" \"tests/**/*.ts\" \"step-definitions/**/*.ts\" \"*.json\" \"*.md\"",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css,scss,yaml,yml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,css,scss,yaml,yml}\"",
     "format:ts": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\" \"step-definitions/**/*.ts\"",
     "lint": "eslint \"src/**/*.ts\" \"tests/**/*.ts\" \"step-definitions/**/*.ts\"",
     "lint:fix": "eslint \"src/**/*.ts\" \"tests/**/*.ts\" \"step-definitions/**/*.ts\" --fix",
@@ -33,6 +33,10 @@
   "keywords": ["playwright", "cucumber", "typescript", "automation", "testing", "e2e", "framework"],
   "author": "Alterzent",
   "license": "ISC",
+  "lint-staged": {
+    "*.{js,ts,tsx,json,md,css,scss,yaml,yml}": ["prettier --write", "git add"],
+    "*.{js,ts,tsx}": ["eslint --fix", "git add"]
+  },
   "devDependencies": {
     "@cucumber/cucumber": "^12.2.0",
     "@cucumber/html-formatter": "^22.0.0",
@@ -47,7 +51,9 @@
     "eslint-formatter-compact": "^8.40.0",
     "eslint-formatter-html": "^2.7.3",
     "eslint-formatter-json": "^8.40.0",
+    "husky": "^9.1.7",
     "jscpd": "^4.0.5",
+    "lint-staged": "^16.2.5",
     "prettier": "^3.6.2",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
