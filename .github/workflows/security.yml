@@ -221,7 +221,7 @@ jobs:
     
     steps:
     - name: Download audit artifacts
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v5
       with:
         pattern: security-*
         merge-multiple: true
