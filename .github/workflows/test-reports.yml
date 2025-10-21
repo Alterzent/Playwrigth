@@ -197,7 +197,7 @@ jobs:
         script: |
           const deploymentUrl = '${{ steps.deployment.outputs.page_url }}';
           
-          const comment = \`## 📊 Test Reports Published
+          const comment = \`## 📊 Playwrigth Test Reports Published
           
           ✅ **Reports are now available:**
           - 🌐 **Dashboard:** [\${deploymentUrl}](\${deploymentUrl})
@@ -214,7 +214,7 @@ jobs:
           await github.rest.issues.create({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            title: \`📊 Test Report - \${new Date().toISOString().split('T')[0]}\`,
+            title: \`📊 Playwrigth Test Report - \${new Date().toISOString().split('T')[0]}\`,
             body: comment,
             labels: ['test-report', 'automated']
           });

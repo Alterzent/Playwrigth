@@ -1,6 +1,4 @@
-# Playwright Cucumber TypeScript Automation Framework# Playwright Cucumber TypeScript Automation Framework# Playwright Cucumber TypeScript Automation Framework# Playwright + Cucumber TypeScript Automation
-
-
+# Playwrigth Automation Framework
 
 Professional test automation framework using Playwright with Cucumber and TypeScript for end-to-end testing.
 
@@ -493,7 +491,7 @@ The project includes comprehensive GitHub Actions workflows for professional dev
 
 ### Monitoring and Reports
 
-- **Test Reports**: Available at `https://alterzent.github.io/WebIoStructure`
+- **Test Reports**: Available at `https://alterzent.github.io/Playwrigth`
 - **Security Scans**: Weekly automated vulnerability checks
 - **Code Quality**: Continuous monitoring with detailed reports
 - **Dependency Updates**: Automated PR creation for security patches

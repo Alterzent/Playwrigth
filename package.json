@@ -1,7 +1,7 @@
 {
-  "name": "playwright-cucumber-ts-automation",
+  "name": "playwrigth-automation-framework",
   "version": "1.0.0",
-  "description": "HALO QA Automation Test using Playwright and Cucumber with TypeScript",
+  "description": "Professional Playwright Automation Framework using Cucumber and TypeScript",
   "main": "index.js",
   "scripts": {
     "pretest": "tsc --project ./tsconfig.json",
@@ -23,9 +23,12 @@
     "playwright",
     "cucumber",
     "typescript",
-    "automation"
+    "automation",
+    "testing",
+    "e2e",
+    "framework"
   ],
-  "author": "",
+  "author": "Alterzent",
   "license": "ISC",
   "devDependencies": {
     "@cucumber/cucumber": "^9.6.0",

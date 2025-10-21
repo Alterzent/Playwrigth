@@ -107,7 +107,7 @@ jobs:
         mkdir -p release-assets
         
         # Create distribution package
-        tar -czf release-assets/playwright-cucumber-framework-v${{ needs.validate.outputs.version }}.tar.gz \
+        tar -czf release-assets/playwrigth-automation-framework-v${{ needs.validate.outputs.version }}.tar.gz \
           --exclude=node_modules \
           --exclude=.git \
           --exclude=test-results \
@@ -132,7 +132,7 @@ jobs:
         ## 🚀 Release v${{ needs.validate.outputs.version }}
         
         ### ✨ Features
-        - Professional Playwright + Cucumber TypeScript automation framework
+        - Professional Playwrigth + Cucumber TypeScript automation framework
         - Multi-browser testing support (Chromium, Firefox, WebKit)
         - Comprehensive reporting with HTML and JSON outputs
         - SOLID principles implementation with design patterns
@@ -197,8 +197,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: release-assets/playwright-cucumber-framework-v${{ needs.validate.outputs.version }}.tar.gz
-        asset_name: playwright-cucumber-framework-v${{ needs.validate.outputs.version }}.tar.gz
+        asset_path: release-assets/playwrigth-automation-framework-v${{ needs.validate.outputs.version }}.tar.gz
+        asset_name: playwrigth-automation-framework-v${{ needs.validate.outputs.version }}.tar.gz
         asset_content_type: application/gzip
         
     - name: Upload test reports
