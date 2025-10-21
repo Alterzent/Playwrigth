@@ -36,6 +36,7 @@
     "@playwright/test": "^1.39.0",
     "@types/node": "^24.9.1",
     "cucumber-html-reporter": "^7.2.0",
+    "jscpd": "^4.0.5",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.2.2"
