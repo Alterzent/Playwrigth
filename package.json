@@ -31,12 +31,26 @@
     "test:analyze": "npm run test:headless && npm run analyze",
     "prepare": "husky"
   },
-  "keywords": ["playwright", "cucumber", "typescript", "automation", "testing", "e2e", "framework"],
+  "keywords": [
+    "playwright",
+    "cucumber",
+    "typescript",
+    "automation",
+    "testing",
+    "e2e",
+    "framework"
+  ],
   "author": "Alterzent",
   "license": "ISC",
   "lint-staged": {
-    "*.{js,ts,tsx,json,md,css,scss,yaml,yml}": ["prettier --write", "git add"],
-    "*.{js,ts,tsx}": ["eslint --fix", "git add"]
+    "*.{js,ts,tsx,json,md,css,scss,yaml,yml}": [
+      "prettier --write",
+      "git add"
+    ],
+    "*.{js,ts,tsx}": [
+      "eslint --fix",
+      "git add"
+    ]
   },
   "devDependencies": {
     "@cucumber/cucumber": "^12.2.0",
