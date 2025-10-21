@@ -1,3 +1,5 @@
+import { Browser, BrowserContext, Page } from '@playwright/test';
+
 export interface IPage {
   navigate(url?: string): Promise<void>;
   isLoaded(): Promise<boolean>;
@@ -24,14 +26,14 @@ export interface IBrowserManager {
   createContext(options?: BrowserContextOptions): Promise<void>;
   createPage(): Promise<void>;
   closeBrowser(): Promise<void>;
-  getCurrentPage(): any;
+  getCurrentPage(): Page | null;
   takeScreenshot(name: string): Promise<void>;
 }
 
 export interface ITestContext {
-  browser: any;
-  context: any;
-  page: any;
+  browser: Browser | null;
+  context: BrowserContext | null;
+  page: Page | null;
   browserManager: IBrowserManager;
 }
 

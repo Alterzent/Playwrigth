@@ -15,7 +15,7 @@ When('I login with username {string} and password {string}', async function (thi
 });
 
 Then('I should be redirected to the products page', async function (this: CustomWorld) {
-  const productsPage = new ProductsPage(this.page);
+  const _productsPage = new ProductsPage(this.page);
   await expect(this.page).toHaveURL(/.*inventory.html/);
 });
 

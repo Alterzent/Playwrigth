@@ -43,14 +43,14 @@ export class WaitUtils {
     interval: number = 100
   ): Promise<void> {
     const startTime = Date.now();
-    
+
     while (Date.now() - startTime < timeout) {
       if (await condition()) {
         return;
       }
       await this.sleep(interval);
     }
-    
+
     throw new Error(`Condition not met within ${timeout}ms`);
   }
 }

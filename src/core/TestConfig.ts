@@ -1,6 +1,6 @@
 export class TestConfig {
   private static instance: TestConfig;
-  
+
   private readonly config = {
     baseUrl: 'https://www.saucedemo.com/',
     timeout: 30000,

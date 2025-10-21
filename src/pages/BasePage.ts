@@ -1,4 +1,4 @@
-import { Page, expect } from '@playwright/test';
+import { Page } from '@playwright/test';
 import { IPage } from '../interfaces';
 import { TestConfig } from '../core/TestConfig';
 
@@ -33,8 +33,8 @@ export abstract class BasePage implements IPage {
   }
 
   protected async waitForElement(selector: string, timeout?: number): Promise<void> {
-    await this.page.waitForSelector(selector, { 
-      timeout: timeout || this.config.getTimeout() 
+    await this.page.waitForSelector(selector, {
+      timeout: timeout || this.config.getTimeout()
     });
   }
 

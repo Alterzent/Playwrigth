@@ -16,7 +16,7 @@ class TestWorld implements ITestContext {
 
 setWorldConstructor(TestWorld);
 
-BeforeAll(async function () {
+BeforeAll(async () => {
   console.log('Starting test suite execution');
 });
 
@@ -24,7 +24,7 @@ Before(async function () {
   await this.browserManager.launchBrowser();
   await this.browserManager.createContext();
   await this.browserManager.createPage();
-  
+
   this.page = this.browserManager.getCurrentPage();
 });
 
@@ -33,11 +33,11 @@ After(async function (scenario: any) {
     const screenshotName = `${StringUtils.sanitizeFilename(scenario.pickle.name)}_${StringUtils.generateTimestamp()}`;
     await this.browserManager.takeScreenshot(screenshotName);
   }
-  
+
   await this.browserManager.closeBrowser();
 });
 
-AfterAll(async function () {
+AfterAll(async () => {
   console.log('Test suite execution completed');
 });
 

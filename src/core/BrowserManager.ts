@@ -15,7 +15,7 @@ export class BrowserManager implements IBrowserManager {
   public async launchBrowser(options?: BrowserLaunchOptions): Promise<void> {
     const browserType = process.env.BROWSER || 'chromium';
     const defaultOptions = this.config.getBrowserConfig(browserType);
-    
+
     const launchOptions = {
       headless: this.config.isHeadless(),
       slowMo: defaultOptions?.slowMo || 0,
@@ -23,14 +23,14 @@ export class BrowserManager implements IBrowserManager {
     };
 
     switch (browserType) {
-      case 'firefox':
-        this.browser = await firefox.launch(launchOptions);
-        break;
-      case 'webkit':
-        this.browser = await webkit.launch(launchOptions);
-        break;
-      default:
-        this.browser = await chromium.launch(launchOptions);
+    case 'firefox':
+      this.browser = await firefox.launch(launchOptions);
+      break;
+    case 'webkit':
+      this.browser = await webkit.launch(launchOptions);
+      break;
+    default:
+      this.browser = await chromium.launch(launchOptions);
     }
   }
 
@@ -64,7 +64,7 @@ export class BrowserManager implements IBrowserManager {
     if (this.page) await this.page.close();
     if (this.context) await this.context.close();
     if (this.browser) await this.browser.close();
-    
+
     this.page = null;
     this.context = null;
     this.browser = null;
@@ -79,7 +79,7 @@ export class BrowserManager implements IBrowserManager {
 
   public async takeScreenshot(name: string): Promise<void> {
     if (!this.page) return;
-    
+
     const screenshotPath = `${this.config.getReportingConfig().screenshotPath}${name}.png`;
     await this.page.screenshot({ path: screenshotPath, fullPage: true });
   }
